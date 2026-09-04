@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>repalender</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #14161d;
+            --surface: #1b1e28;
+            --surface-raised: #232734;
+            --hairline: rgba(237, 234, 224, 0.09);
+            --text: #ece9e1;
+            --text-dim: #8b8d99;
+            --gold: #c99a52;
+            --gold-soft: rgba(201, 154, 82, 0.14);
+            --coral: #d17a5f;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--ink);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            width: 100%;
+        }
+
+        /* Header */
+        .top-bar {
+            padding: 22px 20px 16px;
+            border-bottom: 1px solid var(--hairline);
+        }
+
+        .top-bar .eyebrow {
+            font-size: 0.78rem;
+            color: var(--text-dim);
+            letter-spacing: 0.02em;
+        }
+
+        .top-bar h1 {
+            font-family: 'Fraunces', serif;
+            font-weight: 500;
+            font-size: 1.6rem;
+            letter-spacing: 0.01em;
+            margin-top: 2px;
+        }
+
+        /* Main content */
+        .main-content {
+            flex: 1;
+            padding: 20px 18px 24px;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        .view-panel {
+            display: none;
+            flex-direction: column;
+            gap: 22px;
+        }
+
+        .view-panel.active {
+            display: flex;
+        }
+
+        /* Calendar card */
+        .calendar-box {
+            background-color: var(--surface);
+            border: 1px solid var(--hairline);
+            border-radius: 14px;
+            padding: 16px 14px 18px;
+        }
+
+        .cal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            padding: 0 2px;
+        }
+
+        .cal-header h3 {
+            font-family: 'Fraunces', serif;
+            font-weight: 500;
+            font-size: 1.08rem;
+        }
+
+        .cal-nav-btn {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.15s ease, color 0.15s ease;
+        }
+
+        .cal-nav-btn:hover,
+        .cal-nav-btn:focus-visible {
+            background-color: var(--surface-raised);
+            color: var(--text);
+        }
+
+        .cal-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            text-align: center;
+        }
+
+        .cal-day-header {
+            color: var(--text-dim);
+            font-weight: 500;
+            font-size: 0.75rem;
+            padding-bottom: 6px;
+        }
+
+        .cal-cell {
+            aspect-ratio: 1;
+            background-color: transparent;
+            color: var(--text);
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.92rem;
+            font-weight: 500;
+            position: relative;
+            cursor: pointer;
+            transition: background-color 0.15s ease;
+        }
+
+        .cal-cell:hover {
+            background-color: var(--surface-raised);
+        }
+
+        .cal-cell.other-month {
+            color: var(--text-dim);
+            opacity: 0.45;
+        }
+
+        .cal-cell.selected {
+            background-color: var(--gold);
+            color: var(--ink);
+            font-weight: 600;
+        }
+
+        .cal-cell.selected:hover {
+            background-color: var(--gold);
+        }
+
+        .cal-cell.has-event::after {
+            content: '';
+            position: absolute;
+            bottom: 5px;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background-color: var(--gold);
+        }
+
+        .cal-cell.selected.has-event::after {
+            background-color: var(--ink);
+        }
+
+        /* Section headings */
+        .section-title {
+            font-size: 0.92rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--hairline);
+        }
+
+        /* Event list */
+        .events-list {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .event-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 13px 2px;
+            border-bottom: 1px solid var(--hairline);
+        }
+
+        .event-row:last-child {
+            border-bottom: none;
+        }
+
+        .ev-date-badge {
+            flex-shrink: 0;
+            width: 46px;
+            text-align: center;
+            color: var(--gold);
+            font-weight: 600;
+            font-size: 0.78rem;
+            line-height: 1.3;
+        }
+
+        .ev-name {
+            flex: 1;
+            font-size: 0.95rem;
+            min-width: 0;
+            overflow-wrap: break-word;
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.15s ease, color 0.15s ease;
+        }
+
+        .action-btn:hover,
+        .action-btn:focus-visible {
+            background-color: var(--surface-raised);
+            color: var(--text);
+        }
+
+        .action-btn.fav-true {
+            color: var(--gold);
+        }
+
+        .action-btn.delete-btn:hover {
+            color: var(--coral);
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+
+        .form-input {
+            width: 100%;
+            background-color: transparent;
+            border: none;
+            border-bottom: 1px solid var(--hairline);
+            color: var(--text);
+            padding: 8px 2px 10px;
+            font-size: 1rem;
+            font-family: inherit;
+            outline: none;
+            border-radius: 0;
+            transition: border-color 0.15s ease;
+        }
+
+        .form-input:focus {
+            border-bottom-color: var(--gold);
+        }
+
+        .form-input::-webkit-calendar-picker-indicator {
+            filter: invert(0.7);
+            cursor: pointer;
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .checkbox-row input {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--gold);
+        }
+
+        .checkbox-row label {
+            margin: 0;
+            color: var(--text);
+            font-size: 0.92rem;
+            font-weight: 400;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background-color: var(--gold);
+            color: var(--ink);
+            border: none;
+            border-radius: 10px;
+            padding: 14px;
+            font-size: 0.98rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: opacity 0.15s ease;
+        }
+
+        .submit-btn:hover {
+            opacity: 0.9;
+        }
+
+        .empty-msg {
+            text-align: center;
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            padding: 28px 10px;
+        }
+
+        /* Bottom navigation */
+        .tab-bar {
+            display: flex;
+            border-top: 1px solid var(--hairline);
+            background-color: var(--surface);
+            padding: 6px 12px calc(6px + env(safe-area-inset-bottom));
+            position: sticky;
+            bottom: 0;
+        }
+
+        .tab-btn {
+            flex: 1;
+            background: none;
+            border: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            padding: 8px 4px;
+            color: var(--text-dim);
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .tab-btn svg {
+            width: 22px;
+            height: 22px;
+            stroke: currentColor;
+            stroke-width: 1.8;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .tab-btn span {
+            font-size: 0.68rem;
+            font-weight: 500;
+        }
+
+        .tab-btn.active {
+            color: var(--gold);
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-bar">
+        <div class="eyebrow">Today</div>
+        <h1 id="topDateDisplay">Sept 4th, 2026</h1>
+    </header>
+
+    <div class="main-content">
+
+        <!-- CALENDAR VIEW -->
+        <div id="viewCal" class="view-panel active">
+            <div class="calendar-box">
+                <div class="cal-header">
+                    <button class="cal-nav-btn" id="calPrev" aria-label="Previous month">&#8249;</button>
+                    <h3 id="calMonthDisplay">September 2026</h3>
+                    <button class="cal-nav-btn" id="calNext" aria-label="Next month">&#8250;</button>
+                </div>
+                <div class="cal-grid">
+                    <div class="cal-day-header">S</div><div class="cal-day-header">M</div><div class="cal-day-header">T</div>
+                    <div class="cal-day-header">W</div><div class="cal-day-header">T</div><div class="cal-day-header">F</div><div class="cal-day-header">S</div>
+                </div>
+                <div class="cal-grid" id="calGrid"></div>
+            </div>
+
+            <div>
+                <div class="section-title">Upcoming events</div>
+                <div class="events-list" id="upcomingEventsContainer"></div>
+            </div>
+        </div>
+
+        <!-- NEW EVENT PAGE -->
+        <div id="viewAdd" class="view-panel">
+            <div class="section-title">Create new event</div>
+            <div class="calendar-box">
+                <form id="eventForm">
+                    <div class="form-group">
+                        <label for="eventDateInput">Date</label>
+                        <input type="date" id="eventDateInput" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventNameInput">Event name</label>
+                        <input type="text" id="eventNameInput" class="form-input" placeholder="Event description..." required>
+                    </div>
+                    <div class="form-group checkbox-row">
+                        <input type="checkbox" id="eventFavInput">
+                        <label for="eventFavInput">Star as favorite</label>
+                    </div>
+                    <button type="submit" class="submit-btn">Save event</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- STARRED EVENTS PAGE -->
+        <div id="viewFav" class="view-panel">
+            <div class="section-title">Starred events</div>
+            <div class="events-list" id="favoritesContainer"></div>
+        </div>
+    </div>
+
+    <nav class="tab-bar">
+        <button class="tab-btn active" id="navCalBtn" title="Calendar">
+            <svg viewBox="0 0 24 24">
+                <rect x="3" y="4" width="18" height="18" rx="3" ry="3"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            <span>Calendar</span>
+        </button>
+        <button class="tab-btn" id="navAddBtn" title="New event">
+            <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="9"></circle>
+                <line x1="12" y1="8" x2="12" y2="16"></line>
+                <line x1="8" y1="12" x2="16" y2="12"></line>
+            </svg>
+            <span>Add</span>
+        </button>
+        <button class="tab-btn" id="navFavBtn" title="Starred events">
+            <svg viewBox="0 0 24 24">
+                <polygon points="12 2 15 9 22 9 17 14 19 21 12 17 5 21 7 14 2 9 9 9"></polygon>
+            </svg>
+            <span>Starred</span>
+        </button>
+    </nav>
+
+    <script>
+        const STORAGE_KEY = 'repalender_mobile_v8';
+
+        // Some sandboxed / embedded preview environments block localStorage entirely
+        // (accessing it throws instead of returning null). If that happens uncaught,
+        // it stops this whole script from running before the nav buttons ever get
+        // wired up. This wrapper falls back to an in-memory store so the app still works.
+        let memoryFallback = {};
+        function loadEvents() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                return raw ? JSON.parse(raw) : {};
+            } catch (e) {
+                return memoryFallback;
+            }
+        }
+        function saveEvents() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
+            } catch (e) {
+                memoryFallback = events;
+            }
+        }
+
+        let events = loadEvents();
+        let currentDate = new Date();
+        let selectedDate = new Date();
+
+        const navCalBtn = document.getElementById('navCalBtn');
+        const navAddBtn = document.getElementById('navAddBtn');
+        const navFavBtn = document.getElementById('navFavBtn');
+
+        const viewCal = document.getElementById('viewCal');
+        const viewAdd = document.getElementById('viewAdd');
+        const viewFav = document.getElementById('viewFav');
+
+        const topDateDisplay = document.getElementById('topDateDisplay');
+        const calGrid = document.getElementById('calGrid');
+        const calMonthDisplay = document.getElementById('calMonthDisplay');
+        const upcomingEventsContainer = document.getElementById('upcomingEventsContainer');
+        const favoritesContainer = document.getElementById('favoritesContainer');
+        const eventForm = document.getElementById('eventForm');
+
+        function switchView(view) {
+            [navCalBtn, navAddBtn, navFavBtn].forEach(b => b.classList.remove('active'));
+            [viewCal, viewAdd, viewFav].forEach(v => v.classList.remove('active'));
+
+            if (view === 'cal') {
+                navCalBtn.classList.add('active');
+                viewCal.classList.add('active');
+                renderUI();
+            } else if (view === 'add') {
+                navAddBtn.classList.add('active');
+                viewAdd.classList.add('active');
+                document.getElementById('eventDateInput').value = toLocalYYYYMMDD(selectedDate);
+            } else if (view === 'fav') {
+                navFavBtn.classList.add('active');
+                viewFav.classList.add('active');
+                renderUI();
+            }
+        }
+
+        navCalBtn.addEventListener('click', () => switchView('cal'));
+        navAddBtn.addEventListener('click', () => switchView('add'));
+        navFavBtn.addEventListener('click', () => switchView('fav'));
+
+        function getOrdinal(n) {
+            const s = ["th", "st", "nd", "rd"], v = n % 100;
+            return n + (s[(v - 20) % 10] || s[v] || s[0]);
+        }
+
+        function toLocalYYYYMMDD(dateObj) {
+            const y = dateObj.getFullYear();
+            const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const d = String(dateObj.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        }
+
+        function formatShortDay(dateStr) {
+            const [y, m, d] = dateStr.split('-');
+            const dateObj = new Date(y, m - 1, d);
+            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
+            return `${months[dateObj.getMonth()]} ${dateObj.getDate()}`;
+        }
+
+        function escapeHtml(t) {
+            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+            return String(t).replace(/[&<>"']/g, m => map[m]);
+        }
+
+        function renderUI() {
+            const monthsFull = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
+            topDateDisplay.textContent = `${monthsFull[selectedDate.getMonth()]} ${getOrdinal(selectedDate.getDate())}, ${selectedDate.getFullYear()}`;
+
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            const longMonths = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+            calMonthDisplay.textContent = `${longMonths[month]} ${year}`;
+            calGrid.innerHTML = '';
+
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const prevDays = new Date(year, month, 0).getDate();
+
+            for (let i = firstDay; i > 0; i--) {
+                calGrid.appendChild(buildDayCell(new Date(year, month - 1, prevDays - i + 1), true));
+            }
+            for (let i = 1; i <= daysInMonth; i++) {
+                calGrid.appendChild(buildDayCell(new Date(year, month, i), false));
+            }
+            const totalCells = firstDay + daysInMonth;
+            const nextDays = totalCells <= 35 ? 35 - totalCells : 42 - totalCells;
+            for (let i = 1; i <= nextDays; i++) {
+                calGrid.appendChild(buildDayCell(new Date(year, month + 1, i), true));
+            }
+
+            let allEvents = [];
+            let favEvents = [];
+            Object.keys(events).forEach(dateStr => {
+                events[dateStr].forEach((ev, index) => {
+                    const eventData = { dateStr, index, ...ev };
+                    allEvents.push(eventData);
+                    if (ev.favorite) favEvents.push(eventData);
+                });
+            });
+
+            allEvents.sort((a, b) => a.dateStr.localeCompare(b.dateStr));
+            favEvents.sort((a, b) => a.dateStr.localeCompare(b.dateStr));
+
+            upcomingEventsContainer.innerHTML = allEvents.length === 0 ? `<div class="empty-msg">No events yet — tap Add to create one.</div>` : '';
+            allEvents.forEach(e => upcomingEventsContainer.innerHTML += buildEventHTML(e));
+
+            favoritesContainer.innerHTML = favEvents.length === 0 ? `<div class="empty-msg">No starred events yet.</div>` : '';
+            favEvents.forEach(e => favoritesContainer.innerHTML += buildEventHTML(e));
+        }
+
+        function buildDayCell(dateObj, isOtherMonth) {
+            const dateStr = toLocalYYYYMMDD(dateObj);
+            const cell = document.createElement('div');
+            cell.className = 'cal-cell';
+
+            if (isOtherMonth) cell.classList.add('other-month');
+            if (dateStr === toLocalYYYYMMDD(selectedDate)) cell.classList.add('selected');
+            if (events[dateStr] && events[dateStr].length > 0) cell.classList.add('has-event');
+
+            cell.textContent = dateObj.getDate();
+
+            cell.addEventListener('click', () => {
+                selectedDate = dateObj;
+                renderUI();
+            });
+            return cell;
+        }
+
+        function buildEventHTML(item) {
+            const [monthAbbr, dayNum] = formatShortDay(item.dateStr).split(' ');
+            return `
+                <div class="event-row">
+                    <div class="ev-date-badge">${monthAbbr}<br>${dayNum}</div>
+                    <div class="ev-name">${escapeHtml(item.name)}</div>
+                    <div class="action-btns">
+                        <button class="action-btn ${item.favorite ? 'fav-true' : ''}" onclick="toggleFav('${item.dateStr}', ${item.index})" aria-label="Toggle favorite">★</button>
+                        <button class="action-btn delete-btn" onclick="delEvent('${item.dateStr}', ${item.index})" aria-label="Delete event">✕</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        window.toggleFav = function(dateStr, index) {
+            if (events[dateStr] && events[dateStr][index]) {
+                events[dateStr][index].favorite = !events[dateStr][index].favorite;
+                saveEvents();
+                renderUI();
+            }
+        };
+
+        window.delEvent = function(dateStr, index) {
+            if (events[dateStr]) {
+                events[dateStr].splice(index, 1);
+                if (events[dateStr].length === 0) delete events[dateStr];
+                saveEvents();
+                renderUI();
+            }
+        };
+
+        document.getElementById('calPrev').addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            renderUI();
+        });
+
+        document.getElementById('calNext').addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            renderUI();
+        });
+
+        eventForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const dateStr = document.getElementById('eventDateInput').value;
+            const nameStr = document.getElementById('eventNameInput').value.trim();
+            const isFav = document.getElementById('eventFavInput').checked;
+
+            if (!events[dateStr]) events[dateStr] = [];
+            events[dateStr].push({ name: nameStr, favorite: isFav });
+            saveEvents();
+
+            const [y, m, d] = dateStr.split('-');
+            selectedDate = new Date(y, m - 1, d);
+            currentDate = new Date(y, m - 1, 1);
+
+            document.getElementById('eventNameInput').value = '';
+            document.getElementById('eventFavInput').checked = false;
+
+            switchView('cal');
+        });
+
+        renderUI();
+    </script>
+</body>
+</html>
