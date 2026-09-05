@@ -821,6 +821,20 @@
             box-shadow: inset 0 1px 0 rgba(255,255,255,0.3);
         }
 
+        .theme-swatch-comicsans {
+            background: repeating-linear-gradient(45deg, #ff66c4, #ff66c4 10px, #66ff66 10px 20px);
+        }
+
+        .theme-swatch-geocities {
+            background: repeating-linear-gradient(45deg, #000 0 8px, #ff00ff 8px 16px);
+        }
+
+        .theme-swatch-corporate {
+            background: #ece9d8;
+            border: 2px solid #808080;
+            box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 0 #404040;
+        }
+
         .theme-check {
             display: none;
             color: var(--gold);
@@ -982,6 +996,109 @@
             color: #fff;
             box-shadow: inset 0 1px 0 rgba(255,255,255,0.5);
         }
+
+        /* ===== Theme: Comic Sans Chaos (joke, not meant to be usable) ===== */
+        body[data-theme="comicsans"] {
+            --ink: #fff200;
+            --surface: #ff66c4;
+            --surface-raised: #66ff66;
+            --hairline: #000000;
+            --text: #000000;
+            --text-dim: #4d0033;
+            --gold: #ff0000;
+            --gold-soft: rgba(255, 0, 0, 0.25);
+            --coral: #0066ff;
+        }
+
+        body[data-theme="comicsans"] * {
+            font-family: 'Comic Sans MS', 'Comic Sans', cursive, sans-serif !important;
+        }
+
+        body[data-theme="comicsans"] .calendar-box,
+        body[data-theme="comicsans"] .game-card,
+        body[data-theme="comicsans"] .theme-card,
+        body[data-theme="comicsans"] .tab-bar {
+            border: 3px dashed #ff0000;
+        }
+
+        body[data-theme="comicsans"] .submit-btn,
+        body[data-theme="comicsans"] .tutorial-next {
+            background: #66ff66;
+            color: #ff0000;
+            border: 3px dashed #000;
+            text-transform: uppercase;
+        }
+
+        /* ===== Theme: Geocities '99 (joke, not meant to be usable) ===== */
+        @keyframes geoBlink { 50% { opacity: 0; } }
+        body[data-theme="geocities"] {
+            --ink: #000000;
+            --surface: #1a001a;
+            --surface-raised: #330033;
+            --hairline: #ff00ff;
+            --text: #00ff00;
+            --text-dim: #00cccc;
+            --gold: #ffff00;
+            --gold-soft: rgba(255, 255, 0, 0.2);
+            --coral: #ff0000;
+        }
+
+        body[data-theme="geocities"] {
+            background: repeating-linear-gradient(45deg, #000 0 10px, #1a001a 10px 20px);
+        }
+
+        body[data-theme="geocities"] * {
+            font-family: 'Times New Roman', Times, serif !important;
+        }
+
+        body[data-theme="geocities"] .top-bar h1 {
+            animation: geoBlink 1s steps(1) infinite;
+            color: #ffff00;
+            text-shadow: 2px 2px #ff0000;
+        }
+
+        body[data-theme="geocities"] .calendar-box,
+        body[data-theme="geocities"] .game-card,
+        body[data-theme="geocities"] .theme-card,
+        body[data-theme="geocities"] .tab-bar {
+            border: 2px solid #ff00ff;
+            box-shadow: 0 0 12px #ff00ff;
+        }
+
+        /* ===== Theme: Beige Corporate (joke, not meant to be usable) ===== */
+        body[data-theme="corporate"] {
+            --ink: #d4d0c8;
+            --surface: #ece9d8;
+            --surface-raised: #ffffff;
+            --hairline: #808080;
+            --text: #000000;
+            --text-dim: #555555;
+            --gold: #000080;
+            --gold-soft: rgba(0, 0, 128, 0.12);
+            --coral: #800000;
+        }
+
+        body[data-theme="corporate"] * {
+            font-family: 'Times New Roman', Times, serif !important;
+        }
+
+        body[data-theme="corporate"] .calendar-box,
+        body[data-theme="corporate"] .game-card,
+        body[data-theme="corporate"] .theme-card,
+        body[data-theme="corporate"] .tab-bar {
+            border-radius: 0 !important;
+            border: 2px solid #808080;
+            box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 0 #404040;
+        }
+
+        body[data-theme="corporate"] .submit-btn,
+        body[data-theme="corporate"] .tutorial-next {
+            border-radius: 0 !important;
+            background: #ece9d8;
+            color: #000;
+            border: 2px solid #808080;
+            box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 0 #404040;
+        }
     </style>
 </head>
 <body>
@@ -1113,6 +1230,34 @@
                         <div class="game-card-info">
                             <h4>Glass</h4>
                             <p>Frosted, translucent panels</p>
+                        </div>
+                        <div class="theme-check">&#10003;</div>
+                    </div>
+                </div>
+
+                <div id="sillyThemesWrap" style="display:none; flex-direction:column; gap:10px; margin-top:22px;">
+                    <div class="section-title">??? (please don't actually use these)</div>
+                    <div class="theme-card" data-theme="comicsans" style="margin-top:14px;">
+                        <div class="theme-swatch theme-swatch-comicsans"></div>
+                        <div class="game-card-info">
+                            <h4>Comic Sans Chaos</h4>
+                            <p>Guaranteed to hurt your credibility</p>
+                        </div>
+                        <div class="theme-check">&#10003;</div>
+                    </div>
+                    <div class="theme-card" data-theme="geocities">
+                        <div class="theme-swatch theme-swatch-geocities"></div>
+                        <div class="game-card-info">
+                            <h4>Geocities '99</h4>
+                            <p>Under construction since 1999</p>
+                        </div>
+                        <div class="theme-check">&#10003;</div>
+                    </div>
+                    <div class="theme-card" data-theme="corporate">
+                        <div class="theme-swatch theme-swatch-corporate"></div>
+                        <div class="game-card-info">
+                            <h4>Beige Corporate</h4>
+                            <p>Please hold, your aesthetic is important to us</p>
                         </div>
                         <div class="theme-check">&#10003;</div>
                     </div>
@@ -1413,7 +1558,7 @@
         navCalBtn.addEventListener('click', () => switchView('cal'));
         navAddBtn.addEventListener('click', () => switchView('add'));
         navFavBtn.addEventListener('click', () => switchView('fav'));
-        navSettingsBtn.addEventListener('click', () => switchView('settings'));
+        navSettingsBtn.addEventListener('click', () => { switchView('settings'); registerSettingsTap(); });
         navGamesBtn.addEventListener('click', () => switchView('games'));
 
         function getOrdinal(n) {
@@ -1603,6 +1748,7 @@
             persistGamesUnlocked();
             navGamesBtn.style.display = 'flex';
             const toast = document.getElementById('unlockToast');
+            toast.textContent = 'Mini-games unlocked';
             toast.classList.add('show');
             setTimeout(() => toast.classList.remove('show'), 2200);
         }
@@ -1619,6 +1765,38 @@
                 const alternates = last6.every((t, i) => i === 0 || t.view !== last6[i - 1].view);
                 if (alternates) unlockGames();
             }
+        }
+
+        // ===== Silly themes unlock (tap Settings tab 4x within 3s) =====
+        const SILLY_UNLOCK_KEY = 'repalender_silly_unlocked_v1';
+        let sillyUnlocked = false;
+        let sillyUnlockedMemory = false;
+        let settingsTapLog = [];
+
+        function hasSillyUnlocked() {
+            try { return localStorage.getItem(SILLY_UNLOCK_KEY) === 'yes'; }
+            catch (e) { return sillyUnlockedMemory; }
+        }
+        function persistSillyUnlocked() {
+            try { localStorage.setItem(SILLY_UNLOCK_KEY, 'yes'); }
+            catch (e) { sillyUnlockedMemory = true; }
+        }
+        function unlockSillyThemes() {
+            if (sillyUnlocked) return;
+            sillyUnlocked = true;
+            persistSillyUnlocked();
+            document.getElementById('sillyThemesWrap').style.display = 'flex';
+            const toast = document.getElementById('unlockToast');
+            toast.textContent = 'Questionable themes unlocked';
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2200);
+        }
+        function registerSettingsTap() {
+            if (sillyUnlocked) return;
+            const now = Date.now();
+            settingsTapLog.push(now);
+            settingsTapLog = settingsTapLog.filter(t => now - t <= 3000);
+            if (settingsTapLog.length >= 4) unlockSillyThemes();
         }
 
         // ===== Game screen switching =====
@@ -2027,6 +2205,10 @@
         if (hasUnlockedGames()) {
             gamesUnlocked = true;
             navGamesBtn.style.display = 'flex';
+        }
+        if (hasSillyUnlocked()) {
+            sillyUnlocked = true;
+            document.getElementById('sillyThemesWrap').style.display = 'flex';
         }
         refreshBests();
 
